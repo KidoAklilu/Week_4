@@ -1,38 +1,38 @@
-// import express and third partmodules
+// Third-Party Modules
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import session from 'express-session'
 
-//ES modules fic for __dirname
+// ES Modules fix for __dirname
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-//Import mongoose
-
+// Import Mongoose Module
 import mongoose from 'mongoose'
 
-//configurarion module
+// Configuration Module
 import { MongoURI, Secret } from '../config/config.js'
 
-//import router
-
+// Import Routes
 import indexRouter from './routes/index.route.server.js'
+import movieRouter from './routes/movies.route.server.js'
 
-//instance app-server
+// Instantiate Express Application
 const app = express()
 
-//complete the db configuration
-
+// Complete the DB Configuration
 mongoose.connect(MongoURI)
 const db = mongoose.connection
 
-//Listen for connection sucess or error
-db.on('open', () => console.log('connected to MongoDB'))
-db.on('error', () => console.log('MongoDB connection error'))
+//Listen for connection success or error
+db.on('open', () => console.log('Connected to MongoDB'))
+db.on('error', () => console.log('Mongo Connection Error'))
 
-//set up viewENgine
+// Set Up Middlewares
+
+// Setup ViewEngine EJS
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'ejs')
 
@@ -40,6 +40,7 @@ app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+// app.use(express.static(path.join(__dirname,'/client')));
 app.use(express.static(path.join(__dirname, '../public')))
 app.use(
   session({
@@ -49,13 +50,8 @@ app.use(
   })
 )
 
-//add routes
-
+// Use Routes
 app.use('/', indexRouter)
-
-//run app
-// app.listen(3000)
-
-// console.log('Server runnning at http://localhost:3000')
+app.use('/', movieRouter)
 
 export default app
